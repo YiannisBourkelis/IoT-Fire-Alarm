@@ -15,6 +15,10 @@
 # Σχετική επίσημη τεκμηρίωση
 - [https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html "https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html")
 
+# Εξωτερική τεκμηρίωση
+- https://github.com/espressif/arduino-esp32/issues/1804
+- https://github.com/espressif/arduino-esp32/issues/2158
+
 # Δοκιμή 1
 esp_adc_cal_get_voltage
 
