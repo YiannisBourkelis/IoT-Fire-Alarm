@@ -16,6 +16,9 @@
 ### Υλικό
 Ο IoTFP αποτελείται από ένα **ESP32** στο οποίο είναι συνδεδεμένοι ένας **αισθητήρας μονοξειδίου του άνθρακα**  ένας **αισθητήρας θερμοκρασίας** και ένα δυνατό **buzzer**
 
+### EPS32 pinout
+[![](https://github.com/YiannisBourkelis/IoT-Fire-Alarm/blob/master/docs/images/ESP32-VROOM-32D-PINOUT.png)](https://github.com/YiannisBourkelis/IoT-Fire-Alarm/blob/master/docs/images/ESP32-VROOM-32D-PINOUT.png)
+
 ### Αρχές λειτουργείας
 Ο IoTFP μπορεί να χρησιμοποηθεί με δύο τρόπους: είτε αυτόνομα σε κάποιο χώρο, είτε συνδεδεμένος στο Internet.
 #### Αυτόνομη χρήση
