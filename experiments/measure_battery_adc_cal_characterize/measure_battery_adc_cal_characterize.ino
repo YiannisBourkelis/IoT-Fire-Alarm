@@ -28,7 +28,12 @@
 * 
 */
 
-#include <driver/adc.h>
+#include "driver/adc.h"
+#include "esp_adc_cal.h"
+
+#define DEFAULT_VREF    1100        //Use adc2_vref_to_gpio() to obtain a better estimate
+
+static esp_adc_cal_characteristics_t *adc_chars;
 
 // the setup routine runs once when you press reset:
 void setup() {
@@ -36,26 +41,42 @@ void setup() {
   Serial.begin(115200);
 
   delay(200);
-  
+
   adc1_config_width(ADC_WIDTH_BIT_12);
   adc1_config_channel_atten(ADC1_CHANNEL_4,ADC_ATTEN_DB_6);
+
+  adc_chars = (esp_adc_cal_characteristics_t*)calloc(1, sizeof(esp_adc_cal_characteristics_t));
+
+  //Characterize ADC at particular atten
+  esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_6, ADC_WIDTH_BIT_12, DEFAULT_VREF, adc_chars);
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
   // read the input on analog pin 0:
   Serial.println("\ntest");
-  int measurements=0;
+  
+  uint32_t reading =  adc1_get_raw(ADC1_CHANNEL_4);
+  uint32_t voltage =  esp_adc_cal_raw_to_voltage(reading, adc_chars);
+
+  Serial.println("Reading:");
+  Serial.print(reading);
+  Serial.println("Voltage:");
+  Serial.print(voltage);
+  Serial.println("");
+  
+
+  //int measurements=0;
   //for (int i=0; i<100; i++){
   //  int val = adc1_get_raw(ADC1_CHANNEL_4);
   //}
-  int val = adc1_get_raw(ADC1_CHANNEL_4);
-  Serial.print("Raw ADC:");
-  Serial.println(val);
+  //int val = adc1_get_raw(ADC1_CHANNEL_4);
+ // Serial.print("Raw ADC:");
+  //Serial.println(val);
 
-  Serial.print("Volt:");
-  float volts = (val * 1.35f) / 4095;
-  Serial.println(volts);
+  //Serial.print("Volt:");
+  //float volts = (val * 1.35f) / 4095;
+  //Serial.println(volts);
   
   delay(500);        // delay in between reads for stability
 }
