@@ -13,7 +13,10 @@
 Πρέπει οπότε να βρούμε ένα άλλο τρόπο μέτρησης που να μήν εξαρτάται από την σταθερά 3.3v
 
 # Σχετική επίσημη τεκμηρίωση
+[Analog to Digital Converter](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html "Analog to Digital Converter")
 
+# Επίσημη υλοποίηση βιβλιοθήκης
+[esp_adc_cal_raw_to_voltage]( https://github.com/espressif/esp-idf/blob/master/examples/peripherals/adc/adc/main/adc1_example_main.c "esp_adc_cal_raw_to_voltage")
 
 # Εξωτερική τεκμηρίωση
 
