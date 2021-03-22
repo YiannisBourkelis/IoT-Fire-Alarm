@@ -54,15 +54,14 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
   // read the input on analog pin 0:
-  Serial.println("\ntest");
-  
+
   uint32_t reading =  adc1_get_raw(ADC1_CHANNEL_4);
   uint32_t voltage =  esp_adc_cal_raw_to_voltage(reading, adc_chars);
 
-  Serial.println("Reading:");
-  Serial.print(reading);
-  Serial.println("Voltage:");
-  Serial.print(voltage);
+  Serial.print("Reading:");
+  Serial.println(reading);
+  Serial.print("Voltage:");
+  Serial.println(voltage);
   Serial.println("");
   
 
