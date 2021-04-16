@@ -24,6 +24,7 @@
 #include "ESP32AnalogRead.h"
 #include "WiFi.h"
 #include <HTTPClient.h>
+#include "uptime_formatter.h"
 
 ESP32AnalogRead adc;
 
@@ -35,7 +36,7 @@ const char* password =  "ilovecomputers";
 // ADC1_CHANNEL_2     ADC1 channel 2 is GPIO38
 // ADC1_CHANNEL_3     ADC1 channel 3 is GPIO39
 // ADC1_CHANNEL_4     ADC1 channel 4 is GPIO32
-// ADC1_CHANNEL_5     ADC1 channel 5 is GPIO33
+// ADC1_CHANNEL_5     ADC1 channel 5 is GPIO33 ok
 // ADC1_CHANNEL_6     ADC1 channel 6 is GPIO34
 // ADC1_CHANNEL_7     ADC1 channel 7 is GPIO35
 
@@ -55,7 +56,7 @@ void setup() {
 
 
 
-float battery_read()
+float voltage_divider_read()
 {
     float sum = 0;               // sum of samples taken
     float voltage = 0;           // calculated voltage
@@ -73,14 +74,24 @@ float battery_read()
     return voltage;
 }
 
+float to_battery_volts(float voltage_divider_volts){
+  const float voltage_calibration = 0.197; //lowering this value increase return value
+  return voltage_divider_volts / voltage_calibration;
+}
+
 
 void loop() {
-  battery_read();
+  //battery_read();
   Serial.println("Loop Start");
   delay(500);
 
   HTTPClient https;
-  https.begin("https://iot.filoxeni.com/api/user/device/2/measurement");
+  https.begin("https://iot.filoxeni.com/api/user/device/measurement");
+
+  String uptime = uptime_formatter::getUptime();
+  Serial.println(uptime);
+
+  String battery_voltage = (String)to_battery_volts(voltage_divider_read());
 
   https.addHeader("Content-Type", "application/json"); //Specify content-type header
   https.addHeader("Host", "iot.filoxeni.com"); //Specify content-type header
@@ -89,8 +100,8 @@ void loop() {
   json += "{";
   json += "\"team_id\":\""           + ((String)2)                   + "\"";
   json += ",\"photoresistor\":\"" + ((String)10)    + "\"";
-  json += ",\"battery_voltage\":\"" + ((String)2)    + "\"";
-  json += ",\"uptime\":\"" + ((String)1)    + "\"";
+  json += ",\"battery_voltage\":\"" + battery_voltage    + "\"";
+  json += ",\"uptime\":\"" + uptime    + "\"";
   json += "}";
   
   

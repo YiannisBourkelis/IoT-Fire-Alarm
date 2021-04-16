@@ -130,15 +130,15 @@ uint32_t ESP32AnalogRead::readMiliVolts() {
 #ifdef ESP_IDF_VERSION
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(3, 1, 0)
 	esp_adc_cal_characterize(unit,
-			ADC_ATTEN_DB_0,
+			ADC_ATTEN_0db,
 			ADC_WIDTH_BIT_12,
 			V_REF,
 			&characteristics);
 #else
-	esp_adc_cal_get_characteristics(V_REF, ADC_ATTEN_DB_0, ADC_WIDTH_BIT_12,&characteristics);
+	esp_adc_cal_get_characteristics(V_REF, ADC_ATTEN_0db, ADC_WIDTH_BIT_12,&characteristics);
 #endif
 #else
-	esp_adc_cal_get_characteristics(V_REF, ADC_ATTEN_DB_0, ADC_WIDTH_BIT_12,&characteristics);
+	esp_adc_cal_get_characteristics(V_REF, ADC_ATTEN_0db, ADC_WIDTH_BIT_12,&characteristics);
 #endif
 
 	uint32_t voltage = 0;
