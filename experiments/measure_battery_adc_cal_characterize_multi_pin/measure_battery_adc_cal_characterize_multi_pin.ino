@@ -58,24 +58,27 @@ void setup() {
 
 float voltage_divider_read()
 {
-    float sum = 0;               // sum of samples taken
-    float voltage = 0;           // calculated voltage
+    float sum = 0.000;               // sum of samples taken
+    float voltage = 0.000;           // calculated voltage
 
     for (int i = 0; i < 500; i++)
     {
         sum += adc.readVoltage();
         delayMicroseconds(1000);
     }
+    Serial.print("Sum: ");
+    Serial.println(sum, 3);
+    
     // calculate the voltage
-    voltage = sum / 500;
-    Serial.print("Voltage: ");
-    Serial.println(voltage);
-    Serial.println(adc.readVoltage());
+    voltage = (float)sum / (float)500.000;
+    Serial.print("Voltage Divider volts: ");
+    Serial.println(voltage, 3);
+    Serial.println(adc.readVoltage(), 3);
     return voltage;
 }
 
 float to_battery_volts(float voltage_divider_volts){
-  const float voltage_calibration = 0.197; //lowering this value increase return value
+  const float voltage_calibration = 0.199; //lowering this value increase return value
   return voltage_divider_volts / voltage_calibration;
 }
 
@@ -91,7 +94,11 @@ void loop() {
   String uptime = uptime_formatter::getUptime();
   Serial.println(uptime);
 
-  String battery_voltage = (String)to_battery_volts(voltage_divider_read());
+  float battery_voltage_float = to_battery_volts(voltage_divider_read());
+  String battery_voltage = (String)battery_voltage_float;
+  Serial.print(battery_voltage_float, 3);
+  Serial.println("battery_voltage converted as string: ");
+  Serial.println(battery_voltage);
 
   https.addHeader("Content-Type", "application/json"); //Specify content-type header
   https.addHeader("Host", "iot.filoxeni.com"); //Specify content-type header
@@ -104,7 +111,6 @@ void loop() {
   json += ",\"uptime\":\"" + uptime    + "\"";
   json += "}";
   
-  
   int httpResponseCode = https.POST(json); //Send the actual POST request
 
   if(httpResponseCode > 0){
@@ -114,4 +120,5 @@ void loop() {
     Serial.print("Error on sending POST (filoxeni): ");
     Serial.println(httpResponseCode);
   }
+
 }

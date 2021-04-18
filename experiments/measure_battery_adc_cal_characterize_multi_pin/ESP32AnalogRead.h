@@ -10,7 +10,7 @@ private:
 	 esp_adc_cal_characteristics_t characteristics;
 	 adc_channel_t channel ;
 	 boolean attached=false;
-public :
+public:
 	ESP32AnalogRead(int pin=-1);
 	~ESP32AnalogRead(){}
 	void attach(int pin);

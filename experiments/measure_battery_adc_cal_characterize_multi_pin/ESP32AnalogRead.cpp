@@ -20,9 +20,8 @@ void ESP32AnalogRead::attach(int pin) {
 }
 
 float ESP32AnalogRead::readVoltage() {
-	float mv = readMiliVolts();
-
-	return mv * 0.001;
+	uint32_t mv = readMiliVolts();
+	return (float)mv * 0.001;
 }
 /**
  * typedef enum {
