@@ -19,10 +19,13 @@ void ESP32AnalogRead::attach(int pin) {
 	attached = true;
 }
 
+/*
 float ESP32AnalogRead::readVoltage() {
 	uint32_t mv = readMiliVolts();
 	return (float)mv * 0.001;
 }
+*/
+
 /**
  * typedef enum {
  ADC1_CHANNEL_0 = 0, !< ADC1 channel 0 is GPIO36

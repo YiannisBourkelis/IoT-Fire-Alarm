@@ -25,11 +25,12 @@
 #include "WiFi.h"
 #include <HTTPClient.h>
 #include "uptime_formatter.h"
+#include "secrets.h"
 
 ESP32AnalogRead adc;
 
-const char* ssid = "steth";
-const char* password =  "ilovecomputers";
+const char* ssid = SECRET_WIFI_SSID;
+const char* password =  SECRET_WIFI_PASS;
   
 // ADC1_CHANNEL_0     ADC1 channel 0 is GPIO36
 // ADC1_CHANNEL_1     ADC1 channel 1 is GPIO37
@@ -56,37 +57,38 @@ void setup() {
 
 
 
-float voltage_divider_read()
+uint32_t voltage_divider_read()
 {
-    float sum = 0.000;               // sum of samples taken
-    float voltage = 0.000;           // calculated voltage
+    uint32_t sum = 0;               // sum of samples taken
+    uint32_t voltage_divider_milivolts = 0; // calculated voltage
+    const int samples = 32;
 
-    for (int i = 0; i < 500; i++)
+    for (int i = 0; i < samples; i++)
     {
-        sum += adc.readVoltage();
+        sum += adc.readMiliVolts();
         delayMicroseconds(1000);
     }
-    Serial.print("Sum: ");
-    Serial.println(sum, 3);
+    Serial.print("Sum milivolts: ");
+    Serial.println(sum);
     
     // calculate the voltage
-    voltage = (float)sum / (float)500.000;
-    Serial.print("Voltage Divider volts: ");
-    Serial.println(voltage, 3);
-    Serial.println(adc.readVoltage(), 3);
-    return voltage;
+    voltage_divider_milivolts = sum / samples;
+    Serial.print("Voltage Divider milivolts: ");
+    Serial.println(voltage_divider_milivolts);
+    Serial.println(adc.readMiliVolts());
+    return voltage_divider_milivolts;
 }
 
-float to_battery_volts(float voltage_divider_volts){
-  const float voltage_calibration = 0.199; //lowering this value increase return value
-  return voltage_divider_volts / voltage_calibration;
+uint32_t to_battery_milivolts(uint32_t voltage_divider_milivolts){
+  const float voltage_calibration = 5.0; //lowering this value increase return value
+  return (float)voltage_divider_milivolts * voltage_calibration;
 }
 
 
 void loop() {
   //battery_read();
   Serial.println("Loop Start");
-  delay(500);
+  delay(1000);
 
   HTTPClient https;
   https.begin("https://iot.filoxeni.com/api/user/device/measurement");
@@ -94,11 +96,10 @@ void loop() {
   String uptime = uptime_formatter::getUptime();
   Serial.println(uptime);
 
-  float battery_voltage_float = to_battery_volts(voltage_divider_read());
-  String battery_voltage = (String)battery_voltage_float;
-  Serial.print(battery_voltage_float, 3);
-  Serial.println("battery_voltage converted as string: ");
-  Serial.println(battery_voltage);
+  uint32_t battery_milivolts = to_battery_milivolts(voltage_divider_read());
+  String str_battery_milivolts = (String)battery_milivolts;
+  Serial.print("battery_voltage converted as string: ");
+  Serial.println(str_battery_milivolts);
 
   https.addHeader("Content-Type", "application/json"); //Specify content-type header
   https.addHeader("Host", "iot.filoxeni.com"); //Specify content-type header
@@ -107,10 +108,10 @@ void loop() {
   json += "{";
   json += "\"team_id\":\""           + ((String)2)                   + "\"";
   json += ",\"photoresistor\":\"" + ((String)10)    + "\"";
-  json += ",\"battery_voltage\":\"" + battery_voltage    + "\"";
+  json += ",\"battery_voltage\":\"" + str_battery_milivolts    + "\"";
   json += ",\"uptime\":\"" + uptime    + "\"";
   json += "}";
-  
+   
   int httpResponseCode = https.POST(json); //Send the actual POST request
 
   if(httpResponseCode > 0){

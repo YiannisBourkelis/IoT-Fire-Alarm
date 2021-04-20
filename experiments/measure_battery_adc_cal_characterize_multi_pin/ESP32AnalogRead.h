@@ -14,6 +14,6 @@ public:
 	ESP32AnalogRead(int pin=-1);
 	~ESP32AnalogRead(){}
 	void attach(int pin);
-	float readVoltage();
+	//float readVoltage();
 	uint32_t readMiliVolts();
 };
