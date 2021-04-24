@@ -22,3 +22,4 @@ Homestead.json
 /.vagrant
 .phpunit.result.cache
 experiments/measure_battery_adc_cal_characterize_multi_pin/secrets.h
+experiments/measure_battery_transistor/secrets.h

@@ -28,6 +28,10 @@
 #include "secrets.h"
 
 ESP32AnalogRead adc;
+#define TRANSISTOR_PIN 25
+
+#define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */ 
+#define TIME_TO_SLEEP 60 /* Time ESP32 will go to sleep (in seconds) */
 
 const char* ssid = SECRET_WIFI_SSID;
 const char* password =  SECRET_WIFI_PASS;
@@ -42,6 +46,11 @@ const char* password =  SECRET_WIFI_PASS;
 // ADC1_CHANNEL_7     ADC1 channel 7 is GPIO35
 
 void setup() {
+  Serial.println("Entering SETUP");
+  
+  //gpio 25 pin gia na oplizei to transistor metrisis tis batarias
+  pinMode(TRANSISTOR_PIN, OUTPUT);
+  
   adc.attach(33);
   Serial.begin(115200);
   //edo epilegeis to gpio exo valei to GPIO33
@@ -52,6 +61,7 @@ void setup() {
     Serial.println("Connecting to WiFi..");
   }
   Serial.println("Connected to the WiFi network");
+
   
 }
 
@@ -80,15 +90,17 @@ uint32_t voltage_divider_read()
 }
 
 uint32_t to_battery_milivolts(uint32_t voltage_divider_milivolts){
-  const float voltage_calibration = 5.0; //lowering this value increase return value
+  const float voltage_calibration = 6.04; //lowering this value increase return value
   return (float)voltage_divider_milivolts * voltage_calibration;
 }
 
 
 void loop() {
-  //battery_read();
   Serial.println("Loop Start");
-  delay(1000);
+
+  Serial.println("Open transistor");
+  digitalWrite(TRANSISTOR_PIN, HIGH); 
+  //delay(3000);
 
   HTTPClient https;
   https.begin("https://iot.filoxeni.com/api/user/device/measurement");
@@ -100,6 +112,10 @@ void loop() {
   String str_battery_milivolts = (String)battery_milivolts;
   Serial.print("battery_voltage converted as string: ");
   Serial.println(str_battery_milivolts);
+
+  //close transistor
+  Serial.println("Close transistor");
+  digitalWrite(TRANSISTOR_PIN, LOW); 
 
   https.addHeader("Content-Type", "application/json"); //Specify content-type header
   https.addHeader("Host", "iot.filoxeni.com"); //Specify content-type header
@@ -121,5 +137,9 @@ void loop() {
     Serial.print("Error on sending POST (filoxeni): ");
     Serial.println(httpResponseCode);
   }
+
+ Serial.println("Calling esp_deep_sleep_start...");
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  esp_deep_sleep_start();
 
 }
