@@ -26,12 +26,13 @@
 #include <HTTPClient.h>
 #include "uptime_formatter.h"
 #include "secrets.h"
+#include <esp_wifi.h> //for esp_wifi_stop()
 
 ESP32AnalogRead adc;
 #define TRANSISTOR_PIN 25
 
 #define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */ 
-#define TIME_TO_SLEEP 30 /* Time ESP32 will go to sleep (in seconds) */
+#define TIME_TO_SLEEP 9 /* Time ESP32 will go to sleep (in seconds) */
 
 RTC_DATA_ATTR int bootCount = 0; //metrisis tou plithous deep sleep - awake
 esp_sleep_wakeup_cause_t wakeup_reason; //o logos pou egine wakeup apo deep sleep to esp32
@@ -55,28 +56,36 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Entering SETUP");
 
-  //Increment boot number and print it every reboot
-  ++bootCount;
-  Serial.println("Boot number: " + String(bootCount));
-
-  print_wakeup_reason();
-  
-  //gpio 25 pin gia na oplizei to transistor metrisis tis batarias
-  pinMode(TRANSISTOR_PIN, OUTPUT);
-
-  //edo epilegeis to gpio exo valei to GPIO33
-  adc.attach(33);
-
+  delay(500);
+  Serial.println("Attempt WiFi connection...");
   //syndesi sto wifi
-  WiFi.mode(WIFI_STA);
+  //WiFi.mode(WIFI_STA);
+  Serial.println("CALL WiFi.begin...");
   WiFi.begin(ssid, password);
+  Serial.println("CHECK WiFi.status()...");
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.println("Connecting to WiFi..");
   }
   Serial.println("Connected to the WiFi network");
 
-  
+  Serial.println("SET pinMode(TRANSISTOR_PIN, OUTPUT)");
+  //gpio 25 pin gia na oplizei to transistor metrisis tis batarias
+  pinMode(TRANSISTOR_PIN, OUTPUT);
+
+  delay(500);
+  Serial.println("CALL adc.attach(33)");
+  //edo epilegeis to gpio exo valei to GPIO33
+  adc.attach(33);
+
+  //Increment boot number and print it every reboot
+  ++bootCount;
+  Serial.println("Boot number: " + String(bootCount));
+
+  print_wakeup_reason();
+
+  Serial.println("Set esp_sleep_enable_timer_wakeup to: " + (String)TIME_TO_SLEEP + " seconds");
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
 }
 
 /*
@@ -173,8 +182,14 @@ void loop() {
     Serial.println(httpResponseCode);
   }
 
- Serial.println("Calling esp_deep_sleep_start...");
-  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-  esp_deep_sleep_start();
+  //kleinoume to wifi opws proteinetai kai sto documentation
+  Serial.println("Stopping WiFi...");
+  WiFi.disconnect();
+  esp_wifi_stop();
 
+  //turn off adc. Exei anaferthei se kapoies syzitiseis. Xreiazetai metrisi gia na doume ti ginetai sin katanalwsi me/xwris afto
+  //adc_power_off();
+
+  Serial.println("Calling esp_deep_sleep_start...");
+  esp_deep_sleep_start();
 }
