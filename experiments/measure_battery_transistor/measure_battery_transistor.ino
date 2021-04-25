@@ -32,7 +32,7 @@ ESP32AnalogRead adc;
 #define TRANSISTOR_PIN 25
 
 #define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */ 
-#define TIME_TO_SLEEP 9 /* Time ESP32 will go to sleep (in seconds) */
+#define TIME_TO_SLEEP 30 /* Time ESP32 will go to sleep (in seconds) */
 
 RTC_DATA_ATTR int bootCount = 0; //metrisis tou plithous deep sleep - awake
 esp_sleep_wakeup_cause_t wakeup_reason; //o logos pou egine wakeup apo deep sleep to esp32
@@ -49,14 +49,9 @@ const char* password =  SECRET_WIFI_PASS;
 // ADC1_CHANNEL_6     ADC1 channel 6 is GPIO34
 // ADC1_CHANNEL_7     ADC1 channel 7 is GPIO35
 
-void setup() {
-  //required to prevent "Brownout detector was triggered" error
-  delay(500);
-  
-  Serial.begin(115200);
-  Serial.println("Entering SETUP");
-
-  delay(500);
+void connect_to_wifi()
+{
+  //delay(500);
   Serial.println("Attempt WiFi connection...");
   //syndesi sto wifi
   //WiFi.mode(WIFI_STA);
@@ -68,12 +63,20 @@ void setup() {
     Serial.println("Connecting to WiFi..");
   }
   Serial.println("Connected to the WiFi network");
+}
+
+
+void setup() {
+  delay(100);
+  
+  Serial.begin(115200);
+  Serial.println("Entering SETUP");
 
   Serial.println("SET pinMode(TRANSISTOR_PIN, OUTPUT)");
   //gpio 25 pin gia na oplizei to transistor metrisis tis batarias
   pinMode(TRANSISTOR_PIN, OUTPUT);
 
-  delay(500);
+  delay(100);
   Serial.println("CALL adc.attach(33)");
   //edo epilegeis to gpio exo valei to GPIO33
   adc.attach(33);
@@ -131,11 +134,10 @@ uint32_t voltage_divider_read()
 }
 
 uint32_t to_battery_milivolts(uint32_t voltage_divider_milivolts){
-  //const float voltage_calibration = 6.09; 
-  const float voltage_calibration = 6.11; 
+  const float voltage_calibration = 6.01; 
+  //const float voltage_calibration = 6.11; 
   return (float)voltage_divider_milivolts * voltage_calibration;
 }
-
 
 void loop() {
   Serial.println("Loop Start");
@@ -171,9 +173,18 @@ void loop() {
   json += ",\"boot_count\":\"" + (String)bootCount    + "\"";
   json += ",\"wakeup_reason\":\"" + (String)wakeup_reason    + "\"";
   json += "}";
+
+  //syndesi sto wifi akrivws tin stigmi pou xreiazetai
+  //gia na yparxei oso to dynaton mikroteri katanalwsi
+  connect_to_wifi();
    
   int httpResponseCode = https.POST(json); //Send the actual POST request
 
+  //kleinoume to wifi opws proteinetai kai sto documentation
+  Serial.println("Stopping WiFi...");
+  WiFi.disconnect();
+  esp_wifi_stop();
+  
   if(httpResponseCode > 0){
     Serial.print("POST (filoxeni): ");
     Serial.println(httpResponseCode);
@@ -181,11 +192,6 @@ void loop() {
     Serial.print("Error on sending POST (filoxeni): ");
     Serial.println(httpResponseCode);
   }
-
-  //kleinoume to wifi opws proteinetai kai sto documentation
-  Serial.println("Stopping WiFi...");
-  WiFi.disconnect();
-  esp_wifi_stop();
 
   //turn off adc. Exei anaferthei se kapoies syzitiseis. Xreiazetai metrisi gia na doume ti ginetai sin katanalwsi me/xwris afto
   //adc_power_off();
