@@ -31,7 +31,10 @@ ESP32AnalogRead adc;
 #define TRANSISTOR_PIN 25
 
 #define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */ 
-#define TIME_TO_SLEEP 60 /* Time ESP32 will go to sleep (in seconds) */
+#define TIME_TO_SLEEP 30 /* Time ESP32 will go to sleep (in seconds) */
+
+RTC_DATA_ATTR int bootCount = 0; //metrisis tou plithous deep sleep - awake
+esp_sleep_wakeup_cause_t wakeup_reason; //o logos pou egine wakeup apo deep sleep to esp32
 
 const char* ssid = SECRET_WIFI_SSID;
 const char* password =  SECRET_WIFI_PASS;
@@ -46,23 +49,52 @@ const char* password =  SECRET_WIFI_PASS;
 // ADC1_CHANNEL_7     ADC1 channel 7 is GPIO35
 
 void setup() {
+  //required to prevent "Brownout detector was triggered" error
+  delay(500);
+  
+  Serial.begin(115200);
   Serial.println("Entering SETUP");
+
+  //Increment boot number and print it every reboot
+  ++bootCount;
+  Serial.println("Boot number: " + String(bootCount));
+
+  print_wakeup_reason();
   
   //gpio 25 pin gia na oplizei to transistor metrisis tis batarias
   pinMode(TRANSISTOR_PIN, OUTPUT);
-  
-  adc.attach(33);
-  Serial.begin(115200);
+
   //edo epilegeis to gpio exo valei to GPIO33
+  adc.attach(33);
+
+  //syndesi sto wifi
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
+    delay(1000);
     Serial.println("Connecting to WiFi..");
   }
   Serial.println("Connected to the WiFi network");
 
   
+}
+
+/*
+Method to print the reason by which ESP32
+has been awaken from sleep
+*/
+void print_wakeup_reason(){
+  wakeup_reason = esp_sleep_get_wakeup_cause();
+
+  switch(wakeup_reason)
+  {
+    case ESP_SLEEP_WAKEUP_EXT0 : Serial.println("Wakeup caused by external signal using RTC_IO"); break;
+    case ESP_SLEEP_WAKEUP_EXT1 : Serial.println("Wakeup caused by external signal using RTC_CNTL"); break;
+    case ESP_SLEEP_WAKEUP_TIMER : Serial.println("Wakeup caused by timer"); break;
+    case ESP_SLEEP_WAKEUP_TOUCHPAD : Serial.println("Wakeup caused by touchpad"); break;
+    case ESP_SLEEP_WAKEUP_ULP : Serial.println("Wakeup caused by ULP program"); break;
+    default : Serial.printf("Wakeup was not caused by deep sleep: %d\n",wakeup_reason); break;
+  }
 }
 
 
@@ -90,7 +122,8 @@ uint32_t voltage_divider_read()
 }
 
 uint32_t to_battery_milivolts(uint32_t voltage_divider_milivolts){
-  const float voltage_calibration = 6.04; //lowering this value increase return value
+  //const float voltage_calibration = 6.09; 
+  const float voltage_calibration = 6.11; 
   return (float)voltage_divider_milivolts * voltage_calibration;
 }
 
@@ -126,6 +159,8 @@ void loop() {
   json += ",\"photoresistor\":\"" + ((String)10)    + "\"";
   json += ",\"battery_voltage\":\"" + str_battery_milivolts    + "\"";
   json += ",\"uptime\":\"" + uptime    + "\"";
+  json += ",\"boot_count\":\"" + (String)bootCount    + "\"";
+  json += ",\"wakeup_reason\":\"" + (String)wakeup_reason    + "\"";
   json += "}";
    
   int httpResponseCode = https.POST(json); //Send the actual POST request
