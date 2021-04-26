@@ -51,7 +51,7 @@ const char* password =  SECRET_WIFI_PASS;
 
 void connect_to_wifi()
 {
-  //delay(500);
+  delay(500);
   Serial.println("Attempt WiFi connection...");
   //syndesi sto wifi
   //WiFi.mode(WIFI_STA);
@@ -67,7 +67,7 @@ void connect_to_wifi()
 
 
 void setup() {
-  delay(100);
+  delay(500);
   
   Serial.begin(115200);
   Serial.println("Entering SETUP");
@@ -76,7 +76,7 @@ void setup() {
   //gpio 25 pin gia na oplizei to transistor metrisis tis batarias
   pinMode(TRANSISTOR_PIN, OUTPUT);
 
-  delay(100);
+  delay(500);
   Serial.println("CALL adc.attach(33)");
   //edo epilegeis to gpio exo valei to GPIO33
   adc.attach(33);
