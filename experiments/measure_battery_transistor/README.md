@@ -14,7 +14,10 @@
 [![](https://github.com/YiannisBourkelis/IoT-Fire-Alarm/blob/master/experiments/measure_battery_transistor/transistor-experiment-graph.png)](https://github.com/YiannisBourkelis/IoT-Fire-Alarm/blob/master/experiments/measure_battery_transistor/transistor-experiment-graph.png)
 
 #### Συμπεράσματα
-
+1. Για να γίνεται μέτρηση της τάσης με ακρίβεια θα πρέπει να είναι απενεργοποιημένο το WiFi
+2. Με χρήση WiFi η συσκευή σταματάει να στέλνει δεδομένα όταν η μπαταρία πέσει κάτω από τα 3.02v. Το ίδιο είδαμε και στο προηγούμενο πείραμα.
+3. Για οικονομία στην κατανάλωση το WiFi θα πρέπει να ενεργοποιείται ακριβώς πριν γίνει η αποστολή του json και να απενεργοποιείται αμέσως μετά.
+4. Για διαγνωστικούς λόγους, μπορεί να αποστέλεται και το boot_count, ο αριθμός δηλαδή του πλήθουε των wake απο sleep καθώς και το wakeup_reason που μας δίχνει τον λόγο που ξεκίνησε το esp32 (απο deep sleep, reset κλπ). Ετσι μπορούμε να βλέπουμε αν κάτι δεν πάει καλά κατα το ξεκίνημα της συσκευής.
 
 #### Δεδομένα
 Μέσος όρος μετρήσεων ανά ώρα: [https://github.com/YiannisBourkelis/IoT-Fire-Alarm/blob/master/experiments/measure_battery_transistor/avg_battery_voltage_transistor.json](https://github.com/YiannisBourkelis/IoT-Fire-Alarm/blob/master/experiments/measure_battery_transistor/avg_battery_voltage_transistor.json "https://github.com/YiannisBourkelis/IoT-Fire-Alarm/blob/master/experiments/measure_battery_transistor/avg_battery_voltage_transistor.json")
