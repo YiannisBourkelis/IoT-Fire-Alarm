@@ -56,7 +56,8 @@ void setup() {
 float smooth(int adc_pin, int repetitions, int delay_ms)
 {
   int total_measurements = 0;
-  
+
+  //TODO: na prosthesw logiki ekseresis mikroteris kai megaliteris metrisis otan repetitions > 3 xrisimopoiwntas min/max functions
   for (int i = 0; i < repetitions; i++) {
     //Serial.println(analogRead(adc_pin));
     total_measurements += analogRead(adc_pin);
