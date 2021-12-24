@@ -134,7 +134,7 @@ uint32_t voltage_divider_read()
 }
 
 uint32_t to_battery_milivolts(uint32_t voltage_divider_milivolts){
-  const float voltage_calibration = 6.01; 
+  const float voltage_calibration = 5.8699; 
   //const float voltage_calibration = 6.11; 
   return (float)voltage_divider_milivolts * voltage_calibration;
 }
