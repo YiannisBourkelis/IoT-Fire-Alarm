@@ -60,7 +60,7 @@ float smooth(int adc_pin, int repetitions, int delay_ms)
   for (int i = 0; i < repetitions; i++) {
     //Serial.println(analogRead(adc_pin));
     total_measurements += analogRead(adc_pin);
-    delay(delay_ms);
+    delay(delay_ms); //TODO na to valw prin apo to total_measurements += analogRead(adc_pin);
   }
 
   return total_measurements / repetitions;
