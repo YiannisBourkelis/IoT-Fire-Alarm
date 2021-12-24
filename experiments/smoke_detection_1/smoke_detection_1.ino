@@ -37,7 +37,7 @@
 * 3. xreiazetai na vroume mia antistasi opou se iremia na lamvanei p.x. 100. Etsi tha mporesoume na katalavenoume kai:
 *   3.1 An yparxei kapoia vlavi ston aisthitira (p.x. lipsi metrisis ektos evrous iremias p.x. 100 +/- 10
 *   3.2 An i tasi leitourgias 3.1 - 3.6 epireazei tis metriseis 
-* 4. me parousia kapnou (i atmou) lamvaname amesws metriseis panw apo to 0 mexri kai panw apo 3000* 3. me parousia kapnou (i atmou) lamvaname amesws metriseis panw apo to 0 mexri kai panw apo 3000
+* 4. me parousia kapnou (i atmou) lamvaname amesws metriseis panw apo to 0 mexri kai panw apo 3000
 * 5. Dioxetefsame zesto aera kai paratirisame oti den epirreazontousan oi metriseis. Thelei kai alles dokimes otan vroume kaliteri antistasi alla kai kathws yparxei kapnos
 * 6. Dokimasame diafores taseis apo 3.1 ews 3.6 kai den paratirisame metavoli stin katastasi iremias. Thelei kai allo elegxo me alli antistasi kai kathws ginetai metrisi kapnou
 * 7. Me anoixto to kapaki tou smoke detection chamber epireazontai oi metriseis otan p.x. anavoume ton anaptira konta. Me lefko fws epirreazetai ligo.
