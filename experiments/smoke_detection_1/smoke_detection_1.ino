@@ -25,17 +25,23 @@
 * =====================
 * Dokimi
 * ===============
-* 1. theloyme se iremia (xwris parousia kapnou) na lamvanoume mia statheri metrisi p.x. gyrw sto 100
-* 2. sto peirama pou kaname eixame ipsili antistasi opote se iremia lamvaname panta 0
-* 3. me parousia kapnou (i atmou) lamvaname amesws metriseis panw apo to 0 mexri kai panw apo 3000
+* 1. Oi metriseis eginan me antistasi pou se iremia to ADC epestrefe 0.
+* 2. Eleksame tin evesthisia anixnefsis kapnou me diafores taseis
+* 3. Eleksame an metavaletai i katastasi iremias otan dioxetevoume zesto aera
+* 4. Eleksame an to epirreazei to fws
 * 
 * Symperasmata
 * ===============
-* 1. leitourgei ok
-* 2. xreiazetai na vroume mia antistasi opou se iremia na lamvanei p.x. 100. Etsi tha mporesoume na katalavenoume kai:
-*   2.1 An yparxei kapoia vlavi ston aisthitira (p.x. lipsi metrisis ektos evrous iremias p.x. 100 +/- 10
-*   2.2 An i tasi leitourgias 3.1 - 3.6 epireazei tis metriseis 
-* 
+* 1. theloyme se iremia (xwris parousia kapnou) na lamvanoume mia statheri metrisi p.x. gyrw sto 100* 1. theloyme se iremia (xwris parousia kapnou) na lamvanoume mia statheri metrisi p.x. gyrw sto 100
+* 2. leitourgei ok
+* 3. xreiazetai na vroume mia antistasi opou se iremia na lamvanei p.x. 100. Etsi tha mporesoume na katalavenoume kai:
+*   3.1 An yparxei kapoia vlavi ston aisthitira (p.x. lipsi metrisis ektos evrous iremias p.x. 100 +/- 10
+*   3.2 An i tasi leitourgias 3.1 - 3.6 epireazei tis metriseis 
+* 4. me parousia kapnou (i atmou) lamvaname amesws metriseis panw apo to 0 mexri kai panw apo 3000* 3. me parousia kapnou (i atmou) lamvaname amesws metriseis panw apo to 0 mexri kai panw apo 3000
+* 5. Dioxetefsame zesto aera kai paratirisame oti den epirreazontousan oi metriseis. Thelei kai alles dokimes otan vroume kaliteri antistasi alla kai kathws yparxei kapnos
+* 6. Dokimasame diafores taseis apo 3.1 ews 3.6 kai den paratirisame metavoli stin katastasi iremias. Thelei kai allo elegxo me alli antistasi kai kathws ginetai metrisi kapnou
+* 7. Me anoixto to kapaki tou smoke detection chamber epireazontai oi metriseis otan p.x. anavoume ton anaptira konta. Me lefko fws epirreazetai ligo.
+*   Symperasma sxetika me smoke detection chamber: Tha prepei na einai kataskevasmeno wste na epitrepei na pernaei kai na eglovizetai o kapnos me afkolia alla OXI to fws.
 */
 
 #define ADC_input_infrared_sensor 32
