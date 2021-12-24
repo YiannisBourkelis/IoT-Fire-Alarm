@@ -32,7 +32,7 @@
 * 
 * Symperasmata
 * ===============
-* 1. theloyme se iremia (xwris parousia kapnou) na lamvanoume mia statheri metrisi p.x. gyrw sto 100* 1. theloyme se iremia (xwris parousia kapnou) na lamvanoume mia statheri metrisi p.x. gyrw sto 100
+* 1. theloyme se iremia (xwris parousia kapnou) na lamvanoume mia statheri metrisi p.x. gyrw sto 100
 * 2. leitourgei ok
 * 3. xreiazetai na vroume mia antistasi opou se iremia na lamvanei p.x. 100. Etsi tha mporesoume na katalavenoume kai:
 *   3.1 An yparxei kapoia vlavi ston aisthitira (p.x. lipsi metrisis ektos evrous iremias p.x. 100 +/- 10
