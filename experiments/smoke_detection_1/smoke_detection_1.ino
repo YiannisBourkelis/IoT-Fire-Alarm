@@ -62,7 +62,7 @@ float AnalogReadNormalized(int adc_pin, int samples, int initial_delay_ms, int s
 {
   delay(initial_delay_ms);
   
-  int measurements_total = 0;
+  unsigned long measurements_total = 0;
   int min_measurement = INT_MAX;
   int max_measurement = 0;
   
@@ -80,6 +80,7 @@ float AnalogReadNormalized(int adc_pin, int samples, int initial_delay_ms, int s
    */
   if (samples > 3){
     measurements_total -= (min_measurement + max_measurement);
+    samples -= 2;
   }
 
   return (float)measurements_total / (float)samples;
