@@ -44,12 +44,45 @@
 *   Symperasma sxetika me smoke detection chamber: Tha prepei na einai kataskevasmeno wste na epitrepei na pernaei kai na eglovizetai o kapnos me afkolia alla OXI to fws.
 */
 
+
+//the board should support an ADC resolution of 12bits
+//TODO: check if there is a constant to get the ADC resolution of the board at compile time
+//static const unsigned int ADC_RESOLUTION = 4096;
+
 #define ADC_input_infrared_sensor 32
 
 // the setup routine runs once when you press reset:
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(115200);
+}
+
+//TODO version 2.
+float AnalogReadNormalized(int adc_pin, int samples, int initial_delay_ms, int sample_delay_ms)
+{
+  delay(initial_delay_ms);
+  
+  int measurements_total = 0;
+  int min_measurement = INT_MAX;
+  int max_measurement = 0;
+  
+  for (int i = 0; i < samples; i++) {
+    delay(sample_delay_ms);
+    int measurement = analogRead(adc_pin);
+    min_measurement = min(min_measurement, measurement);
+    max_measurement = max(max_measurement, measurement);
+    measurements_total += measurement;
+  }
+
+  /*
+   * if there are 4 or more samples, remove minimum and maximum measurement
+   * from the measurements_total to improve ta accurancy
+   */
+  if (samples > 3){
+    measurements_total -= (min_measurement + max_measurement);
+  }
+
+  return (float)measurements_total / (float)samples;
 }
 
 
