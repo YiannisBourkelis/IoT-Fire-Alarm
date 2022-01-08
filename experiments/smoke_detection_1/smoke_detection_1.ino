@@ -58,20 +58,26 @@ void setup() {
 }
 
 //TODO version 2.
-float AnalogReadNormalized(int adc_pin, int samples, int initial_delay_ms, int sample_delay_ms)
+float AnalogReadNormalized(int adc_pin, unsigned int samples, int sample_delay_ms)
 {
-  delay(initial_delay_ms);
-  
   unsigned long measurements_total = 0;
   int min_measurement = INT_MAX;
   int max_measurement = 0;
+
+  unsigned int samples_taken_counter = 0;
   
-  for (int i = 0; i < samples; i++) {
-    delay(sample_delay_ms);
+  while (true) {
     int measurement = analogRead(adc_pin);
     min_measurement = min(min_measurement, measurement);
     max_measurement = max(max_measurement, measurement);
     measurements_total += measurement;
+    samples_taken_counter++;
+    if (samples_taken_counter < samples){
+      delay(sample_delay_ms);
+    } 
+    else {
+      break;
+    }
   }
 
   /*
@@ -113,4 +119,8 @@ void loop() {
   //lipsi normilized metrisis
   float result = smooth(ADC_input_infrared_sensor, 10, 50);
   Serial.println(result); 
+
+  float result_normalized = AnalogReadNormalized(ADC_input_infrared_sensor, 10, 10);
+  Serial.print("result_normalized: ");
+  Serial.println(result_normalized);
 }
