@@ -50,11 +50,14 @@
 //static const unsigned int ADC_RESOLUTION = 4096;
 
 #define ADC_input_infrared_sensor 32
+const int act_sensor = 27;
+
 
 // the setup routine runs once when you press reset:
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(115200);
+  pinMode(act_sensor, OUTPUT);
 }
 
 //TODO version 2.
@@ -115,12 +118,26 @@ void loop() {
   Serial.println(result);
   delay(200);
   */
-
+  Serial.println("Activate Sircuit");
+  digitalWrite(act_sensor, HIGH);
+   delay(1000);
+   
   //lipsi normilized metrisis
-  float result = smooth(ADC_input_infrared_sensor, 10, 50);
+  float result = analogRead(ADC_input_infrared_sensor); //smooth(ADC_input_infrared_sensor, 10, 50); 
   Serial.println(result); 
 
   float result_normalized = AnalogReadNormalized(ADC_input_infrared_sensor, 10, 10);
-  Serial.print("result_normalized: ");
+  Serial.print("HIGH result_normalized: ");
   Serial.println(result_normalized);
+  Serial.println("Deactivate Sircuit");
+  digitalWrite(act_sensor, LOW);
+
+  delay(2000);
+  
+  result_normalized = AnalogReadNormalized(ADC_input_infrared_sensor, 10, 10);
+  Serial.print("LOW result_normalized: ");
+  Serial.println(result_normalized);
+  Serial.println("\n\n\n");
+
+  delay(2000);
 }
