@@ -7,17 +7,19 @@
 #include <esp_wifi.h> //for esp_wifi_stop()
 
 #define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */ 
-#define TIME_TO_SLEEP 5 /* Time ESP32 will go to sleep (in seconds) */
+#define TIME_TO_SLEEP 10 /* Time ESP32 will go to sleep (in seconds) */
 
+const int SMOKE_THRESHOLD = 200;
 
 esp_sleep_wakeup_cause_t wakeup_reason; //o logos pou egine wakeup apo deep sleep to esp32
 RTC_DATA_ATTR int bootCount = 0; //metrisis tou plithous deep sleep - awake
 
 const char* ssid = "B10_120";
-const char* password =  "yiannpass";
+const char* password =  "yiann";
 
 #define ADC_input_infrared_sensor 32 // diavazoume ton sensora
 const int act_sensor = 27; //dinei revma ston sensora
+const int IO_BEEPER = 14; //dinei revma ston sensora
 
 
 void connect_to_wifi()
@@ -89,6 +91,7 @@ void setup() {
   delay(500);
   Serial.begin(115200);
   pinMode(act_sensor, OUTPUT);
+  pinMode(IO_BEEPER, OUTPUT);
   Serial.println("Entering SETUP");
   print_wakeup_reason();
 
@@ -145,36 +148,65 @@ void send_data_to_iot_server(int smoke_value)
   http.end();  //Free resources
 }
 
+float take_smoke_measurement()
+{
+  /*
+   * lipsi metrisis gia anixnefsi kapnou.
+   * Thetei to pin high gia na trofodotisei to led kai ton aisthitira yperithris
+   * perimenei 1sec gia na trofodotithei swsta kai sti synexeia lamvanei tin metrisi.
+   * Telos, thetei to pin low gia na min katanalwnei energeia.
+   */
+  digitalWrite(act_sensor, HIGH);
+  delay(1000);
+  float result_normalized = AnalogReadNormalized(ADC_input_infrared_sensor, 10, 10);
+  Serial.print("HIGH result_normalized: ");
+  Serial.println(result_normalized);
+  Serial.println("Deactivate Sircuit");
+  digitalWrite(act_sensor, LOW); 
+
+  return result_normalized;
+}
+
 
 void loop() {
   // put your main code here, to run repeatedly:
   Serial.println("Loop Start");
   Serial.println("Activate Sircuit");
-  digitalWrite(act_sensor, HIGH);
-  delay(1000);
-  
-  float result_normalized = AnalogReadNormalized(ADC_input_infrared_sensor, 10, 10);
-  Serial.print("HIGH result_normalized: ");
-  Serial.println(result_normalized);
-  Serial.println("Deactivate Sircuit");
-  digitalWrite(act_sensor, LOW);
 
-  //if result_normalized
-  if (bootCount*TIME_TO_SLEEP >= 250 || true) {
-    bootCount = 0;
-    //Anigo to wifi
+  //take measurement or ULP
+  float result_normalized = take_smoke_measurement();
+
+  //smoke detected?
+  if (result_normalized > SMOKE_THRESHOLD) {
+    Serial.println(">>>> SMOKE DETECTED");
+    //yparxei kapnos
+    digitalWrite(IO_BEEPER, HIGH);
+    
     connect_to_wifi();
-
     send_data_to_iot_server(result_normalized);
-
     //kleinoume to wifi opws proteinetai kai sto documentation
     Serial.println("Stopping WiFi...");
     WiFi.disconnect();
-    esp_wifi_stop();
-    }
+    //esp_wifi_stop(); 
 
-  Serial.println("Calling esp_deep_sleep_start...");
-  esp_deep_sleep_start();
+    delay(20000);
+  }
+  else {
+    //den yparxei kapnos
+    
+    //deactivate beeper
+    digitalWrite(IO_BEEPER, LOW);
+
+    connect_to_wifi();
+    send_data_to_iot_server(result_normalized);
+    //kleinoume to wifi opws proteinetai kai sto documentation
+    Serial.println("Stopping WiFi...");
+    WiFi.disconnect();
+    esp_wifi_stop(); 
+    
+    delay(500);
+    Serial.println("Calling esp_deep_sleep_start...");
+    esp_deep_sleep_start();
+  }
   
-  delay(3000);
 }
