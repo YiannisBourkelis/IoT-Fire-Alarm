@@ -1,0 +1,26 @@
+@startuml
+
+start
+
+repeat
+  :take measurement or ULP;
+
+  if (moke detected?) then (yes)
+    :activate beeper;
+    :connect to internet;
+    :send alarm json;
+    :sleep alarm_sleep_seconds_20;
+  else (no)
+  	:deactivate beeper;
+  
+    :connect to wifi;
+    :send data;
+    :close wifi;
+    :sleep 30sec enter ULP mode;
+    
+  endif
+repeat while (more data?) is (yes)
+->no;
+stop
+
+@enduml
