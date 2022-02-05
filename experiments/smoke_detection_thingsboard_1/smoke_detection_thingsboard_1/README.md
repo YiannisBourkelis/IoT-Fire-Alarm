@@ -1,4 +1,4 @@
-![alternative text](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/YiannisBourkelis/IoT-Fire-Alarm/master/experiments/smoke_detection_thingsboard_1/smoke_detection_thingsboard_1/activity_diagram.txt)
+![alternative text](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/YiannisBourkelis/IoT-Fire-Alarm/master/experiments/smoke_detection_thingsboard_1/smoke_detection_thingsboard_1/activity_diagram2.txt)
 
 
 https://www.planttext.com
