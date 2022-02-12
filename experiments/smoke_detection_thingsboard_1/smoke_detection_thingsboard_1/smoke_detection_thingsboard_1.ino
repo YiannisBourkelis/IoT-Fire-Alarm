@@ -9,7 +9,7 @@
 #define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */ 
 #define TIME_TO_SLEEP 10 /* Time ESP32 will go to sleep (in seconds) */
 
-const int SMOKE_THRESHOLD = 200;
+const int SMOKE_THRESHOLD = 300;
 
 esp_sleep_wakeup_cause_t wakeup_reason; //o logos pou egine wakeup apo deep sleep to esp32
 RTC_DATA_ATTR int bootCount = 0; //metrisis tou plithous deep sleep - awake
@@ -22,7 +22,7 @@ const int act_sensor = 27; //dinei revma ston sensora
 const int IO_BEEPER = 14; //dinei revma ston sensora
 
 
-void connect_to_wifi()
+bool connect_to_wifi()
 {
   delay(500);
   Serial.println("Attempt WiFi connection...");
@@ -32,10 +32,18 @@ void connect_to_wifi()
   WiFi.begin(ssid, password);
   Serial.println("CHECK WiFi.status()...");
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
+    delay(2000);
     Serial.println("Connecting to WiFi..");
   }
-  Serial.println("Connected to the WiFi network");
+
+  bool connected_to_wifi = (WiFi.status() == WL_CONNECTED);
+  if(connected_to_wifi){
+    Serial.println("Connected to the WiFi network");
+  } else {
+    Serial.println("Could not connect to the WiFi network");
+  }
+
+  return connected_to_wifi;
 }
 
 void print_wakeup_reason(){
@@ -182,12 +190,13 @@ void loop() {
     //yparxei kapnos
     digitalWrite(IO_BEEPER, HIGH);
     
-    connect_to_wifi();
-    send_data_to_iot_server(result_normalized);
-    //kleinoume to wifi opws proteinetai kai sto documentation
-    Serial.println("Stopping WiFi...");
-    WiFi.disconnect();
-    //esp_wifi_stop(); 
+    //syndesi sto wifi kai apostoli dedomenwn
+    bool connected_to_wifi = connect_to_wifi();
+    if (connected_to_wifi){
+      Serial.println("will send_data_to_iot_server");
+      send_data_to_iot_server(result_normalized);
+      WiFi.disconnect();
+    }
 
     delay(20000);
   }
@@ -197,11 +206,16 @@ void loop() {
     //deactivate beeper
     digitalWrite(IO_BEEPER, LOW);
 
-    connect_to_wifi();
-    send_data_to_iot_server(result_normalized);
+    //syndesi sto wifi kai apostoli dedomenwn
+    bool connected_to_wifi = connect_to_wifi();
+    if (connected_to_wifi){
+      Serial.println("will send_data_to_iot_server");
+      send_data_to_iot_server(result_normalized);
+      WiFi.disconnect();
+    }
+    
     //kleinoume to wifi opws proteinetai kai sto documentation
     Serial.println("Stopping WiFi...");
-    WiFi.disconnect();
     esp_wifi_stop(); 
     
     delay(500);

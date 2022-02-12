@@ -45,7 +45,9 @@ void setup() {
   delay(200);
 
   adc1_config_width(ADC_WIDTH_BIT_12);
-  adc1_config_channel_atten(ADC1_CHANNEL_4,ADC_ATTEN_DB_0);
+  //ADC1_CHANNEL_4 ADC1 channel 4 is GPIO32
+  //ADC1_CHANNEL_5 ADC1 channel 5 is GPIO33
+  adc1_config_channel_atten(ADC1_CHANNEL_5,ADC_ATTEN_DB_0);
 
   adc_chars = (esp_adc_cal_characteristics_t*)calloc(1, sizeof(esp_adc_cal_characteristics_t));
 
@@ -95,7 +97,7 @@ void loop() {
   uint32_t adc_reading = 0;
   //Multisampling
   for (int i = 0; i < NO_OF_SAMPLES; i++) {
-    adc_reading += adc1_get_raw(ADC1_CHANNEL_4);
+    adc_reading += adc1_get_raw(ADC1_CHANNEL_5);
   }
   adc_reading /= NO_OF_SAMPLES;
  //Convert adc_reading to voltage in mV
@@ -108,8 +110,15 @@ void loop() {
   Serial.println(adc_reading);
   Serial.print("Voltage:");
   Serial.println(voltage);
+  //Serial.println("");
+
+  //int battery_volts = (float)voltage * 4.125;
+  int battery_volts = (float)voltage * 13.74;
+  Serial.print("battery volts:");
+  Serial.println(battery_volts);
   Serial.println("");
   
+  //long result = map(adc_reading, 0, 4096, 0, 3300);
 
   //int measurements=0;
   //for (int i=0; i<100; i++){
