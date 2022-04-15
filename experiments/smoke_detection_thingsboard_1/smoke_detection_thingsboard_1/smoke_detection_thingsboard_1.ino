@@ -1,10 +1,14 @@
-#include "Arduino.h"
+//#include "Arduino.h"
 //#include "ESP32AnalogRead.h"
 #include "WiFi.h"
 #include <HTTPClient.h>
 //#include "uptime_formatter.h"
 //#include "secrets.h"
 #include <esp_wifi.h> //for esp_wifi_stop()
+#include "VoltageCalculator.h"
+
+
+VoltageCalculator voltage_calc;
 
 #define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */ 
 #define TIME_TO_SLEEP 10 /* Time ESP32 will go to sleep (in seconds) */
@@ -14,8 +18,8 @@ const int SMOKE_THRESHOLD = 300;
 esp_sleep_wakeup_cause_t wakeup_reason; //o logos pou egine wakeup apo deep sleep to esp32
 RTC_DATA_ATTR int bootCount = 0; //metrisis tou plithous deep sleep - awake
 
-const char* ssid = "B10_120";
-const char* password =  "yiann";
+const char* ssid = "Hot";
+const char* password =  "paswworddd";
 
 #define ADC_input_infrared_sensor 32 // diavazoume ton sensora
 const int act_sensor = 27; //dinei revma ston sensora
@@ -106,9 +110,11 @@ void setup() {
   
   Serial.println("Set esp_sleep_enable_timer_wakeup to: " + (String)TIME_TO_SLEEP + " seconds");
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+
+  voltage_calc.Setup();
 }
 
-void send_data_to_iot_server(int smoke_value)
+void send_data_to_iot_server(int smoke_value, uint32_t real_voltage_value)
 {
   HTTPClient http;
   //http.begin("http://iot.techthrace.com:8080/api/v1/wGNzhlUkS6EFpW41FcuZ/telemetry");
@@ -129,7 +135,8 @@ void send_data_to_iot_server(int smoke_value)
 
   String json;
   json += "{";
-  json += "\"smoke_value\":\""           + ((String)smoke_value)                   + "\"";
+  json += "\"smoke_value\":\""                   + ((String)smoke_value)                   + "\"";
+  json += ",\"real_voltage_value\":\""           + ((String)real_voltage_value)                   + "\"";
   json += "}";
 
  
@@ -184,6 +191,11 @@ void loop() {
   //take measurement or ULP
   float result_normalized = take_smoke_measurement();
 
+  auto real_voltage_value = voltage_calc.GetVoltage();
+  Serial.print("real voltage:");
+  Serial.print(real_voltage_value);
+  Serial.println(" mV");
+
   //smoke detected?
   if (result_normalized > SMOKE_THRESHOLD) {
     Serial.println(">>>> SMOKE DETECTED");
@@ -194,7 +206,7 @@ void loop() {
     bool connected_to_wifi = connect_to_wifi();
     if (connected_to_wifi){
       Serial.println("will send_data_to_iot_server");
-      send_data_to_iot_server(result_normalized);
+      send_data_to_iot_server(result_normalized, real_voltage_value);
       WiFi.disconnect();
     }
 
@@ -210,7 +222,7 @@ void loop() {
     bool connected_to_wifi = connect_to_wifi();
     if (connected_to_wifi){
       Serial.println("will send_data_to_iot_server");
-      send_data_to_iot_server(result_normalized);
+      send_data_to_iot_server(result_normalized, real_voltage_value);
       WiFi.disconnect();
     }
     

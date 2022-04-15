@@ -113,7 +113,7 @@ void loop() {
   //Serial.println("");
 
   //int battery_volts = (float)voltage * 4.125;
-  int battery_volts = (float)voltage * 13.74;
+  int battery_volts = (float)voltage * 6.05;
   Serial.print("battery volts:");
   Serial.println(battery_volts);
   Serial.println("");
